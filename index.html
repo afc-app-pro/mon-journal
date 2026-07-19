@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Journal — Anne</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230E1A0E'/><text y='55' x='50' font-size='55' text-anchor='middle'>🏔️</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230E1A0E'/><text y='55' x='50' font-size='55' text-anchor='middle'>🏔️</text></svg>">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mon Journal">
+<meta name="theme-color" content="#0E1A0E">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#F5F8F5;--white:#FFF;--ink:#0E1A0E;--mid:#3A5A3A;--low:#7A9A7A;--border:#C8DCC8;
+  --nat:#1A6A9A;--nat-l:#E3F0F8;--tram:#7A3A9A;--tram-l:#F0E8F8;
+  --renf:#C8660A;--renf-l:#FDF0E3;--march:#2A8A4A;--march-l:#E3F5EA;
+  --velo:#0A7A8A;--velo-l:#E3F5F8;--gold:#C8860A;--gold-l:#FEF3D5;
+  --rose:#C04A6A;--rose-l:#FDE8EF;--alim:#8A5A0A;--alim-l:#FBF0D8;
+  --serif:'Playfair Display',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;--mono:'DM Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:14px;line-height:1.55;min-height:100vh}
+
+.hdr{background:var(--ink);padding:14px 20px;border-bottom:4px solid var(--march);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.hdr-title{font-family:var(--serif);font-size:20px;font-weight:400;color:white}
+.hdr-title em{color:#8AE08A;font-style:italic}
+.hdr-stats{display:flex;gap:8px;flex-wrap:wrap}
+.hdr-stat{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:6px 12px;text-align:center}
+.hdr-stat-val{font-family:var(--mono);font-size:15px;font-weight:500;color:white}
+.hdr-stat-lbl{font-size:9px;color:#5A7A5A;text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
+
+.nav{background:var(--white);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;padding:0 12px}
+.nav::-webkit-scrollbar{display:none}
+.nav-tab{padding:11px 12px;font-size:12px;font-weight:600;color:var(--low);cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-1px;transition:all .15s;background:transparent;border-top:none;border-left:none;border-right:none;font-family:var(--sans)}
+.nav-tab:hover{color:var(--mid)}
+.nav-tab.active{color:var(--ink);border-bottom-color:var(--march)}
+
+.main{max-width:900px;margin:0 auto;padding:16px 14px 60px}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+.sh{display:flex;align-items:center;gap:10px;margin:18px 0 12px}
+.sh h2{font-family:var(--serif);font-size:17px;font-weight:400;white-space:nowrap}
+.sh::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* BALANCE CARD */
+.balance-card{background:var(--ink);border-radius:14px;padding:18px 20px;margin-bottom:16px;color:white}
+.balance-title{font-family:var(--serif);font-size:14px;color:rgba(255,255,255,.5);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px;font-size:10px}
+.balance-main{display:flex;align-items:center;justify-content:space-around;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.balance-item{text-align:center}
+.balance-val{font-family:var(--mono);font-size:26px;font-weight:500}
+.balance-val.ingere{color:#8AE08A}
+.balance-val.depense{color:#60A5FA}
+.balance-val.net{color:#FCD34D}
+.balance-lbl{font-size:10px;color:rgba(255,255,255,.4);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
+.balance-sep{font-size:20px;color:rgba(255,255,255,.2)}
+.balance-bar{background:rgba(255,255,255,.1);border-radius:4px;height:6px;overflow:hidden;margin-top:4px}
+.balance-fill{height:100%;border-radius:4px;transition:width .5s}
+.balance-note{font-size:11px;color:rgba(255,255,255,.4);text-align:center;margin-top:8px}
+
+/* FIELDS */
+.field{margin-bottom:10px}
+.field label,.lbl{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--low);margin-bottom:3px}
+.inp{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:13px;outline:none;-webkit-appearance:none}
+.inp:focus{border-color:var(--gold);background:var(--white)}
+textarea.inp{min-height:55px;resize:vertical}
+
+.btn{border:none;border-radius:8px;padding:9px 14px;font-weight:600;cursor:pointer;color:white;background:var(--ink);display:inline-flex;align-items:center;gap:5px;font-family:var(--sans);font-size:12px;transition:all .12s}
+.btn:hover{opacity:.85}
+.btn-full{width:100%;justify-content:center}
+.btn-march{background:var(--march)}
+.btn-alim{background:var(--alim)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-rose{background:var(--rose)}
+
+/* ACTIVITÉ SÉLECTION */
+.act-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.act-btn{padding:6px 11px;border-radius:18px;font-size:11px;font-weight:600;cursor:pointer;border:2px solid var(--border);background:var(--bg);color:var(--mid);transition:all .12s;font-family:var(--sans)}
+.act-btn.sel.nat  {background:var(--nat);  color:white;border-color:var(--nat)}
+.act-btn.sel.tram {background:var(--tram); color:white;border-color:var(--tram)}
+.act-btn.sel.renf {background:var(--renf); color:white;border-color:var(--renf)}
+.act-btn.sel.march{background:var(--march);color:white;border-color:var(--march)}
+.act-btn.sel.velo {background:var(--velo); color:white;border-color:var(--velo)}
+
+/* ENTRIES */
+.entry{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:var(--bg);border-radius:8px;margin-bottom:6px;border-left:4px solid var(--border)}
+.entry.nat  {border-left-color:var(--nat)}
+.entry.tram {border-left-color:var(--tram)}
+.entry.renf {border-left-color:var(--renf)}
+.entry.march{border-left-color:var(--march)}
+.entry.velo {border-left-color:var(--velo)}
+.entry.alim {border-left-color:var(--alim)}
+.entry-icon{font-size:20px;flex-shrink:0}
+.entry-content{flex:1}
+.entry-title{font-size:13px;font-weight:600;margin-bottom:2px}
+.entry-meta{font-size:11px;color:var(--low)}
+.entry-right{text-align:right;flex-shrink:0}
+.entry-val{font-family:var(--mono);font-size:13px;font-weight:600}
+.entry-sub{font-size:10px;color:var(--low);margin-top:2px}
+.del-x{width:20px;height:20px;border-radius:50%;border:none;background:transparent;color:#ccc;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0}
+.del-x:hover{background:var(--rose-l);color:var(--rose)}
+
+/* FEEL */
+.feel-btns{display:flex;gap:7px}
+.feel-btn{font-size:22px;cursor:pointer;padding:5px;border-radius:8px;border:2px solid transparent;transition:all .12s;background:transparent}
+.feel-btn.sel{border-color:var(--gold);background:var(--gold-l)}
+
+/* REPAS ALIM */
+.repas-bloc{background:var(--bg);border-radius:8px;padding:11px 13px;margin-bottom:8px;border-left:3px solid var(--alim)}
+.repas-title{font-size:12px;font-weight:700;color:var(--alim);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.repas-kcal-total{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--alim)}
+.alim-item{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px}
+.alim-item:last-child{border-bottom:none}
+.alim-name{color:var(--mid);flex:1}
+.alim-kcal{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--renf);margin:0 8px}
+
+/* WEEK */
+.week-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:14px}
+.wday{background:var(--white);border:1px solid var(--border);border-radius:7px;padding:7px 3px;text-align:center;min-height:80px;cursor:pointer;transition:all .12s}
+.wday:hover{border-color:var(--gold)}
+.wday.today{border-color:var(--gold);background:var(--gold-l)}
+.wday-label{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--low)}
+.wday-date{font-family:var(--mono);font-size:9px;color:var(--mid);margin:2px 0}
+.wday-acts{font-size:12px;margin-top:3px}
+.wday-kcal-sport{font-size:8px;color:var(--nat);font-family:var(--mono);margin-top:2px}
+.wday-kcal-food{font-size:8px;color:var(--alim);font-family:var(--mono)}
+.wday-bilan{font-size:8px;font-weight:700;font-family:var(--mono);margin-top:2px}
+
+/* NATATION */
+.perf-table{width:100%;border-collapse:collapse}
+.perf-table th{padding:8px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;background:var(--nat);color:white;text-align:center}
+.perf-table td{padding:8px 10px;font-size:12px;border-bottom:1px solid #F0F6F0;text-align:center}
+.perf-table tr:last-child td{border-bottom:none}
+.perf-table tr:hover td{background:var(--nat-l)}
+.perf-val{font-family:var(--mono);font-weight:600;color:var(--nat)}
+
+/* MET TABLE */
+.met-table{width:100%;border-collapse:collapse;font-size:12px}
+.met-table th{padding:6px 10px;background:var(--mid);color:white;text-align:left;font-size:11px}
+.met-table td{padding:6px 10px;border-bottom:1px solid var(--border)}
+.met-table tr:last-child td{border-bottom:none}
+.met-val{font-family:var(--mono);font-weight:600;color:var(--renf)}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:white;padding:9px 18px;border-radius:16px;font-size:12px;font-weight:500;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+
+@media(max-width:600px){.grid2{grid-template-columns:1fr}.week-strip{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <div class="hdr-title">Mon Journal <em>Sport & Nutrition</em></div>
+    <div style="font-size:10px;color:#5A7A5A;margin-top:2px;letter-spacing:.5px;text-transform:uppercase">Anne · 90 kg · Chimio AC dose dense</div>
+  </div>
+  <div class="hdr-stats">
+    <div class="hdr-stat"><div class="hdr-stat-val" id="h-depense" style="color:#60A5FA">0</div><div class="hdr-stat-lbl">Kcal brûlées</div></div>
+    <div class="hdr-stat"><div class="hdr-stat-val" id="h-ingere" style="color:#8AE08A">0</div><div class="hdr-stat-lbl">Kcal ingérées</div></div>
+    <div class="hdr-stat"><div class="hdr-stat-val" id="h-net" style="color:#FCD34D">0</div><div class="hdr-stat-lbl">Bilan net</div></div>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="nav-tab active" onclick="showTab('aujourdhui')">📅 Aujourd'hui</button>
+  <button class="nav-tab" onclick="showTab('semaine')">📊 Semaine</button>
+  <button class="nav-tab" onclick="showTab('natation')">🏊 Natation</button>
+  <button class="nav-tab" onclick="showTab('sport')">➕ Sport</button>
+  <button class="nav-tab" onclick="showTab('alim')">➕ Repas</button>
+</div>
+
+<div class="main">
+
+<!-- ══ AUJOURD'HUI ══ -->
+<div class="tab-panel active" id="tab-aujourdhui">
+
+  <!-- Navigation date -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <button onclick="prevDay()" style="width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:var(--white);font-size:1.1rem;cursor:pointer">‹</button>
+    <div style="text-align:center">
+      <div style="font-size:14px;font-weight:700" id="day-label"></div>
+      <div style="font-size:11px;color:var(--low)" id="day-j"></div>
+    </div>
+    <button onclick="nextDay()" style="width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:var(--white);font-size:1.1rem;cursor:pointer">›</button>
+  </div>
+
+  <!-- Balance -->
+  <div class="balance-card">
+    <div class="balance-title">⚖️ Balance calorique du jour</div>
+    <div class="balance-main">
+      <div class="balance-item">
+        <div class="balance-val ingere" id="b-ingere">0</div>
+        <div class="balance-lbl">Ingérées</div>
+      </div>
+      <div class="balance-sep">−</div>
+      <div class="balance-item">
+        <div class="balance-val depense" id="b-depense">0</div>
+        <div class="balance-lbl">Brûlées sport</div>
+      </div>
+      <div class="balance-sep">=</div>
+      <div class="balance-item">
+        <div class="balance-val net" id="b-net">0</div>
+        <div class="balance-lbl">Net</div>
+      </div>
+    </div>
+    <div class="balance-bar">
+      <div class="balance-fill" id="b-fill" style="width:0%;background:#8AE08A"></div>
+    </div>
+    <div class="balance-note" id="b-note">Objectif : 1 600 kcal ingérées · Métabolisme de base : ~1 800 kcal</div>
+  </div>
+
+  <!-- Activités du jour -->
+  <div class="sh"><h2>🏃 Sport du jour</h2><button class="btn btn-sm btn-march" onclick="showTab('sport')">+ Ajouter</button></div>
+  <div id="sport-list-today"></div>
+
+  <!-- Repas du jour -->
+  <div class="sh"><h2>🥗 Repas du jour</h2><button class="btn btn-sm btn-alim" onclick="showTab('alim')">+ Ajouter</button></div>
+  <div id="alim-list-today"></div>
+
+</div>
+
+<!-- ══ SEMAINE ══ -->
+<div class="tab-panel" id="tab-semaine">
+  <div class="sh"><h2>📊 Ma semaine</h2></div>
+  <div class="week-strip" id="week-strip"></div>
+  <div id="week-totals"></div>
+</div>
+
+<!-- ══ NATATION ══ -->
+<div class="tab-panel" id="tab-natation">
+  <div class="sh"><h2>🏊 Performances natation</h2></div>
+  <div class="card" style="overflow-x:auto">
+    <table class="perf-table">
+      <thead><tr><th>Date</th><th>Crawl 25m</th><th>Brasse 25m</th><th>Durée</th><th>Kcal</th><th>😊</th></tr></thead>
+      <tbody id="nat-body"></tbody>
+    </table>
+  </div>
+  <div class="sh"><h2>🎯 Objectifs</h2></div>
+  <div class="card" style="overflow-x:auto">
+    <table class="perf-table">
+      <thead><tr><th>Phase</th><th>Crawl 25m</th><th>Crawl 50m</th><th>Brasse 25m</th><th>Brasse 50m</th></tr></thead>
+      <tbody>
+        <tr style="background:var(--gold-l)"><td style="text-align:left;font-weight:700;color:var(--gold)">▶ Maintenant</td><td class="perf-val" style="color:var(--gold)">50s–1:00</td><td class="perf-val" style="color:var(--gold)">1:40–2:00</td><td class="perf-val" style="color:var(--gold)">1:00–1:15</td><td class="perf-val" style="color:var(--gold)">2:00–2:30</td></tr>
+        <tr><td style="text-align:left">Mois 1-2</td><td class="perf-val">40–50s</td><td class="perf-val">1:20–1:40</td><td class="perf-val">50s–1:05</td><td class="perf-val">1:40–2:10</td></tr>
+        <tr><td style="text-align:left">Mois 3-4</td><td class="perf-val">35–42s</td><td class="perf-val">1:10–1:20</td><td class="perf-val">44–54s</td><td class="perf-val">1:28–1:48</td></tr>
+        <tr><td style="text-align:left">Mois 5-6</td><td class="perf-val">30–38s</td><td class="perf-val">1:00–1:15</td><td class="perf-val">40–50s</td><td class="perf-val">1:20–1:40</td></tr>
+        <tr><td style="text-align:left">Mois 9-12</td><td class="perf-val">25–32s</td><td class="perf-val">50s–1:05</td><td class="perf-val">32–40s</td><td class="perf-val">1:05–1:20</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sh"><h2>📐 Calcul MET — Comment sont calculées les kcal</h2></div>
+  <div class="card" style="overflow-x:auto">
+    <p style="font-size:12px;color:var(--mid);margin-bottom:8px">Formule : <strong>Kcal = MET × poids(kg) × durée(h)</strong> · Poids : 90 kg</p>
+    <table class="met-table">
+      <thead><tr><th>Activité</th><th>MET</th><th>Kcal/30 min</th><th>Kcal/60 min</th></tr></thead>
+      <tbody>
+        <tr><td>🏊 Natation crawl modéré</td><td class="met-val">8.0</td><td class="met-val">180</td><td class="met-val">360</td></tr>
+        <tr><td>🏊 Natation brasse modéré</td><td class="met-val">5.8</td><td class="met-val">130</td><td class="met-val">261</td></tr>
+        <tr><td>🏊 Natation mixte (crawl+brasse)</td><td class="met-val">7.0</td><td class="met-val">158</td><td class="met-val">315</td></tr>
+        <tr><td>🦘 Trampoline modéré</td><td class="met-val">4.5</td><td class="met-val">101</td><td class="met-val">203</td></tr>
+        <tr><td>🦘 Trampoline intense</td><td class="met-val">6.3</td><td class="met-val">142</td><td class="met-val">284</td></tr>
+        <tr><td>💪 Renforcement musculaire</td><td class="met-val">3.5</td><td class="met-val">79</td><td class="met-val">158</td></tr>
+        <tr><td>🚶 Marche lente (3 km/h)</td><td class="met-val">2.8</td><td class="met-val">63</td><td class="met-val">126</td></tr>
+        <tr><td>🚶 Marche modérée (5 km/h)</td><td class="met-val">3.5</td><td class="met-val">79</td><td class="met-val">158</td></tr>
+        <tr><td>🚶 Marche rapide (6 km/h)</td><td class="met-val">5.0</td><td class="met-val">113</td><td class="met-val">225</td></tr>
+        <tr><td>🚴 Vélo électrique (assistance forte)</td><td class="met-val">3.0</td><td class="met-val">68</td><td class="met-val">135</td></tr>
+        <tr><td>🚴 Vélo électrique (assistance faible)</td><td class="met-val">4.5</td><td class="met-val">101</td><td class="met-val">203</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:11px;color:var(--low);margin-top:8px">Source : Compendium of Physical Activities (Ainsworth et al. 2011) · METs validés scientifiquement</p>
+  </div>
+</div>
+
+<!-- ══ AJOUTER SPORT ══ -->
+<div class="tab-panel" id="tab-sport">
+  <div class="card">
+    <div style="font-family:var(--serif);font-size:16px;margin-bottom:14px">🏃 Ajouter une activité sportive</div>
+    <div class="field">
+      <label>Type d'activité</label>
+      <div class="act-btns">
+        <button class="act-btn nat"   onclick="selAct('nat',this)">🏊 Natation</button>
+        <button class="act-btn tram"  onclick="selAct('tram',this)">🦘 Trampoline</button>
+        <button class="act-btn renf"  onclick="selAct('renf',this)">💪 Renforcement</button>
+        <button class="act-btn march" onclick="selAct('march',this)">🚶 Marche</button>
+        <button class="act-btn velo"  onclick="selAct('velo',this)">🚴 Vélo</button>
+      </div>
+    </div>
+
+    <!-- Sous-type natation -->
+    <div id="nat-subtype" style="display:none" class="field">
+      <label>Type de nage</label>
+      <select class="inp" id="nat-sub">
+        <option value="7.0">🏊 Mixte crawl + brasse (MET 7.0)</option>
+        <option value="8.0">🏊 Crawl seul (MET 8.0)</option>
+        <option value="5.8">🐸 Brasse seule (MET 5.8)</option>
+      </select>
+    </div>
+
+    <!-- Sous-type trampoline -->
+    <div id="tram-subtype" style="display:none" class="field">
+      <label>Intensité</label>
+      <select class="inp" id="tram-sub">
+        <option value="4.5">🦘 Modéré — rebonds doux (MET 4.5)</option>
+        <option value="6.3">🦘 Intense — genoux hauts (MET 6.3)</option>
+      </select>
+    </div>
+
+    <!-- Sous-type marche -->
+    <div id="march-subtype" style="display:none" class="field">
+      <label>Allure</label>
+      <select class="inp" id="march-sub">
+        <option value="2.8">🚶 Lente — 3 km/h (MET 2.8)</option>
+        <option value="3.5">🚶 Modérée — 5 km/h (MET 3.5)</option>
+        <option value="5.0">🚶 Rapide — 6 km/h (MET 5.0)</option>
+      </select>
+    </div>
+
+    <!-- Sous-type vélo -->
+    <div id="velo-subtype" style="display:none" class="field">
+      <label>Assistance</label>
+      <select class="inp" id="velo-sub">
+        <option value="3.0">🚴 Forte assistance (MET 3.0)</option>
+        <option value="4.5">🚴 Faible assistance (MET 4.5)</option>
+      </select>
+    </div>
+
+    <div class="grid2">
+      <div class="field"><label>Date</label><input class="inp" type="date" id="s-date"/></div>
+      <div class="field"><label>Durée (minutes)</label><input class="inp" type="number" id="s-duree" placeholder="ex. 60"/></div>
+    </div>
+
+    <!-- Kcal calculées en temps réel -->
+    <div style="background:var(--nat-l);border-radius:8px;padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:12px;color:var(--mid)">Kcal brûlées estimées</span>
+      <span style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--nat)" id="kcal-preview">—</span>
+    </div>
+
+    <!-- Champs natation spécifiques -->
+    <div id="champs-nat" style="display:none">
+      <div class="grid2">
+        <div class="field"><label>Meilleur temps Crawl 25m</label><input class="inp" id="s-crawl25" placeholder="ex. 48 sec"/></div>
+        <div class="field"><label>Meilleur temps Brasse 25m</label><input class="inp" id="s-brasse25" placeholder="ex. 1:05"/></div>
+      </div>
+      <div class="field"><label>Longueurs naguées</label><input class="inp" type="number" id="s-longueurs" placeholder="ex. 20"/></div>
+    </div>
+
+    <!-- Champs vélo -->
+    <div id="champs-velo" style="display:none">
+      <div class="field"><label>Destination / trajet</label><input class="inp" id="s-velo-dest" placeholder="ex. Saint-Maur → Sucy parc des sports"/></div>
+    </div>
+
+    <div class="field">
+      <label>Ressenti</label>
+      <div class="feel-btns">
+        <button class="feel-btn" data-feel="💪" onclick="selFeel(this)">💪</button>
+        <button class="feel-btn" data-feel="😊" onclick="selFeel(this)">😊</button>
+        <button class="feel-btn" data-feel="😐" onclick="selFeel(this)">😐</button>
+        <button class="feel-btn" data-feel="😴" onclick="selFeel(this)">😴</button>
+        <button class="feel-btn" data-feel="😔" onclick="selFeel(this)">😔</button>
+      </div>
+    </div>
+    <div class="field"><label>Note</label><input class="inp" id="s-note" placeholder="Ex. Moins essoufflée, plus fluide..."/></div>
+    <button class="btn btn-march btn-full" onclick="saveSport()">💾 Enregistrer l'activité</button>
+  </div>
+</div>
+
+<!-- ══ AJOUTER REPAS ══ -->
+<div class="tab-panel" id="tab-alim">
+  <div class="card">
+    <div style="font-family:var(--serif);font-size:16px;margin-bottom:14px">🥗 Ajouter un aliment / repas</div>
+    <div class="grid2">
+      <div class="field"><label>Date</label><input class="inp" type="date" id="a-date"/></div>
+      <div class="field"><label>Repas</label>
+        <select class="inp" id="a-repas">
+          <option value="Petit-déjeuner">☀️ Petit-déjeuner</option>
+          <option value="Déjeuner">🌿 Déjeuner</option>
+          <option value="Collation">🍎 Collation</option>
+          <option value="Dîner">🌙 Dîner</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Aliment / plat</label><input class="inp" id="a-name" placeholder="Ex. Faisselle Rians 250g, Pizza thon Aldi 6/8..."/></div>
+    <div class="grid2">
+      <div class="field"><label>Calories (kcal)</label><input class="inp" type="number" id="a-kcal" placeholder="ex. 310" oninput="updateAlimPreview()"/></div>
+      <div class="field"><label>Quantité / note</label><input class="inp" id="a-note" placeholder="ex. 250g, 1 portion..."/></div>
+    </div>
+    <!-- Preview -->
+    <div style="background:var(--alim-l);border-radius:8px;padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:12px;color:var(--mid)">Calories à ajouter</span>
+      <span style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--alim)" id="alim-preview">0 kcal</span>
+    </div>
+    <button class="btn btn-alim btn-full" onclick="saveAlim()">💾 Enregistrer le repas</button>
+  </div>
+
+  <!-- Aliments fréquents -->
+  <div class="sh"><h2>⭐ Mes aliments fréquents</h2></div>
+  <div class="card">
+    <p style="font-size:11px;color:var(--low);margin-bottom:10px">Appuie pour pré-remplir le formulaire</p>
+    <div style="display:flex;flex-wrap:wrap;gap:6px" id="quick-foods"></div>
+  </div>
+</div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+// CONSTANTES MET
+// ══════════════════════════════════════════════
+const POIDS = 90;
+const PERF_DATE = new Date('2026-07-14');
+const OBJ_KCAL = 1600;
+
+const MET = {
+  nat:   7.0,
+  tram:  4.5,
+  renf:  3.5,
+  march: 3.5,
+  velo:  3.0,
+};
+
+const ACT_CONFIG = {
+  nat:   {icon:'🏊', label:'Natation',        cls:'nat'},
+  tram:  {icon:'🦘', label:'Trampoline',      cls:'tram'},
+  renf:  {icon:'💪', label:'Renforcement',    cls:'renf'},
+  march: {icon:'🚶', label:'Marche',          cls:'march'},
+  velo:  {icon:'🚴', label:'Vélo électrique', cls:'velo'},
+};
+
+// Aliments fréquents d'Anne
+const QUICK_FOODS = [
+  {name:'Faisselle Rians',        kcal:48,  note:'100g'},
+  {name:'Faisselle Rians 250g',   kcal:120, note:'250g'},
+  {name:'Yaourt grec nature',     kcal:59,  note:'100g'},
+  {name:'Pêche fraîche',          kcal:39,  note:'1 pêche ~150g'},
+  {name:'Myrtilles',              kcal:57,  note:'100g'},
+  {name:'Pain de mie Harry\'s',   kcal:111, note:'1 tranche 39g'},
+  {name:'Biscotte Pasquier',      kcal:35,  note:'1 biscotte'},
+  {name:'Beurre salé',            kcal:74,  note:'10g'},
+  {name:'Pavé saumon Aldi',       kcal:208, note:'100g'},
+  {name:'Pizza thon Aldi entière',kcal:700, note:'280g entière'},
+  {name:'Pizza thon Aldi 1/8',    kcal:88,  note:'1 part'},
+  {name:'Salade verte',           kcal:15,  note:'100g'},
+  {name:'Surimi bâtonnet',        kcal:18,  note:'1 bâtonnet 16g'},
+  {name:'Kinder Bueno',           kcal:137, note:'1 barre 43g'},
+  {name:'Mousse sardines armagnac',kcal:208,note:'100g'},
+  {name:'Noix de Grenoble',       kcal:65,  note:'4 cerneaux 20g'},
+  {name:'Chocolat noir 85%',      kcal:60,  note:'1 carré 10g'},
+  {name:'Palets légumes Aldi',    kcal:68,  note:'1 palet 75g'},
+  {name:'Œuf entier',             kcal:78,  note:'1 œuf moyen'},
+  {name:'Avocat',                 kcal:160, note:'1 avocat 100g'},
+];
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let sports = JSON.parse(localStorage.getItem('anne_sports_v3') || 'null');
+let alims  = JSON.parse(localStorage.getItem('anne_alims_v3')  || 'null');
+
+if (!sports) {
+  sports = [
+    {id:'s1',date:'2026-07-14',type:'nat',met:7.0,duree:30,kcal:315,feel:'😊',note:'Crawl + brasse tout doux 🌊',crawl25:'',brasse25:'',longueurs:''},
+    {id:'s2',date:'2026-07-15',type:'nat',met:7.0,duree:30,kcal:315,feel:'😊',note:'Séance 1 officielle 🎉',crawl25:'',brasse25:'',longueurs:''},
+    {id:'s3',date:'2026-07-16',type:'tram',met:4.5,duree:30,kcal:203,feel:'😊',note:'Trampoline 30 min'},
+    {id:'s4',date:'2026-07-16',type:'renf',met:3.5,duree:10,kcal:53, feel:'😊',note:'Renforcement 10 min'},
+    {id:'s5',date:'2026-07-16',type:'march',met:3.5,duree:40,kcal:210,feel:'😊',note:'Marche 40 min'},
+    {id:'s6',date:'2026-07-17',type:'nat',met:7.0,duree:60,kcal:630,feel:'😊',note:'1h natation 🎉',crawl25:'',brasse25:'',longueurs:''},
+    {id:'s7',date:'2026-07-17',type:'march',met:2.8,duree:60,kcal:252,feel:'😴',note:'6 580 pas · très doucement'},
+  ];
+  localStorage.setItem('anne_sports_v3', JSON.stringify(sports));
+}
+if (!alims) {
+  alims = [
+    {id:'a1',date:'2026-07-16',repas:'Dîner',name:'Palets légumes Aldi',kcal:410,note:'6 portions 450g'},
+    {id:'a2',date:'2026-07-16',repas:'Dîner',name:'Pavé saumon Aldi',kcal:591,note:'300g'},
+    {id:'a3',date:'2026-07-16',repas:'Déjeuner',name:'Bâtonnets poulet panés Picard',kcal:59,note:'1 portion 25g'},
+    {id:'a4',date:'2026-07-16',repas:'Déjeuner',name:'Salade verte',kcal:15,note:'100g'},
+    {id:'a5',date:'2026-07-16',repas:'Déjeuner',name:'Surimi Fleury Michon',kcal:235,note:'13 portions 208g'},
+    {id:'a6',date:'2026-07-16',repas:'Petit-déjeuner',name:'Mousse sardines armagnac',kcal:208,note:'100g'},
+    {id:'a7',date:'2026-07-16',repas:'Petit-déjeuner',name:'Pain de mie Harry\'s',kcal:556,note:'5 tranches'},
+    {id:'a8',date:'2026-07-17',repas:'Petit-déjeuner',name:'Faisselle Rians',kcal:120,note:'250g'},
+    {id:'a9',date:'2026-07-17',repas:'Petit-déjeuner',name:'Biscottes Pasquier',kcal:105,note:'3 biscottes'},
+    {id:'a10',date:'2026-07-17',repas:'Petit-déjeuner',name:'Beurre salé',kcal:110,note:'15g'},
+    {id:'a11',date:'2026-07-17',repas:'Déjeuner',name:'Grande salade verte',kcal:180,note:'avec vinaigrette'},
+    {id:'a12',date:'2026-07-17',repas:'Déjeuner',name:'Pizza thon Aldi',kcal:550,note:'6/8 de pizza'},
+    {id:'a13',date:'2026-07-17',repas:'Collation',name:'Kinder Bueno',kcal:548,note:'4 barres'},
+  ];
+  localStorage.setItem('anne_alims_v3', JSON.stringify(alims));
+}
+
+let currentDate = today();
+let selActType = null;
+let selActMet  = 3.5;
+let selFeelVal = '😊';
+
+function today() { return new Date().toISOString().slice(0,10); }
+function uid()   { return 'x'+Date.now()+Math.random().toString(36).slice(2,5); }
+function persist()    { localStorage.setItem('anne_sports_v3', JSON.stringify(sports)); }
+function persistAlim(){ localStorage.setItem('anne_alims_v3',  JSON.stringify(alims)); }
+function toast(msg)   { const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200); }
+
+function calcKcal(met, duree) {
+  return Math.round(met * POIDS * (duree/60));
+}
+
+function fmt(d) {
+  if (!d) return '';
+  const dt = new Date(d+'T12:00:00');
+  return dt.toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'short'});
+}
+function jourJ(d) {
+  const diff = Math.round((new Date(d+'T12:00:00')-PERF_DATE)/86400000);
+  return diff>=0?'J+'+diff:'J'+diff;
+}
+function jColor(d) {
+  const diff = Math.round((new Date(d+'T12:00:00')-PERF_DATE)/86400000);
+  if(diff>=0&&diff<=4) return 'var(--rose)';
+  if(diff>=5&&diff<=10) return 'var(--gold)';
+  return 'var(--march)';
+}
+
+// ══════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════
+function showTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  const tabs=['aujourdhui','semaine','natation','sport','alim'];
+  const idx = tabs.indexOf(id);
+  if(idx>=0) document.querySelectorAll('.nav-tab')[idx].classList.add('active');
+  if(id==='aujourdhui') renderToday();
+  if(id==='semaine')    renderSemaine();
+  if(id==='natation')   renderNatation();
+}
+
+// ══════════════════════════════════════════════
+// RENDU AUJOURD'HUI
+// ══════════════════════════════════════════════
+function prevDay() { const d=new Date(currentDate+'T12:00:00'); d.setDate(d.getDate()-1); currentDate=d.toISOString().slice(0,10); renderToday(); }
+function nextDay() { const d=new Date(currentDate+'T12:00:00'); d.setDate(d.getDate()+1); currentDate=d.toISOString().slice(0,10); renderToday(); }
+
+function renderToday() {
+  const isToday = currentDate===today();
+  const dl = document.getElementById('day-label');
+  const dj = document.getElementById('day-j');
+  if(dl) dl.textContent = isToday ? 'Aujourd\'hui' : fmt(currentDate);
+  if(dj) dj.textContent = jourJ(currentDate);
+
+  const daySports = sports.filter(s=>s.date===currentDate);
+  const dayAlims  = alims.filter(a=>a.date===currentDate);
+
+  const totalDepense = daySports.reduce((s,a)=>s+(+a.kcal||0),0);
+  const totalIngere  = dayAlims.reduce((s,a)=>s+(+a.kcal||0),0);
+  const net = totalIngere - totalDepense;
+
+  // Balance
+  const bi=document.getElementById('b-ingere');
+  const bd=document.getElementById('b-depense');
+  const bn=document.getElementById('b-net');
+  const bf=document.getElementById('b-fill');
+  const bnote=document.getElementById('b-note');
+  if(bi) bi.textContent = totalIngere;
+  if(bd) bd.textContent = totalDepense;
+  if(bn) { bn.textContent = net; bn.style.color = net < 0 ? '#4ADE80' : net > 200 ? '#F87171' : '#FCD34D'; }
+  if(bf) { const pct=Math.min(100,totalIngere/OBJ_KCAL*100); bf.style.width=pct+'%'; bf.style.background=totalIngere>OBJ_KCAL?'#F87171':'#8AE08A'; }
+  if(bnote) {
+    const deficit = OBJ_KCAL - totalIngere;
+    bnote.textContent = deficit>0 ? `Encore ${deficit} kcal pour atteindre l'objectif de ${OBJ_KCAL} kcal` : `Objectif de ${OBJ_KCAL} kcal atteint · Déficit sport : ${totalDepense} kcal`;
+  }
+
+  // Header
+  if(document.getElementById('h-depense')) document.getElementById('h-depense').textContent=totalDepense;
+  if(document.getElementById('h-ingere'))  document.getElementById('h-ingere').textContent=totalIngere;
+  if(document.getElementById('h-net'))     document.getElementById('h-net').textContent=net;
+
+  // Sport du jour
+  const sl = document.getElementById('sport-list-today');
+  if(sl) {
+    if(!daySports.length) { sl.innerHTML='<p style="color:var(--low);font-size:12px;text-align:center;padding:14px">Aucune activité — <button onclick="showTab(\'sport\')" style="color:var(--march);background:none;border:none;cursor:pointer;font-size:12px">Ajouter +</button></p>'; }
+    else sl.innerHTML = daySports.map(s=>{
+      const c=ACT_CONFIG[s.type]||ACT_CONFIG.march;
+      return `<div class="entry ${c.cls}">
+        <div class="entry-icon">${c.icon}</div>
+        <div class="entry-content">
+          <div class="entry-title">${c.label} · ${s.duree} min</div>
+          <div class="entry-meta">${s.note||''} <span style="color:${jColor(s.date)};font-weight:700;margin-left:5px">${jourJ(s.date)}</span></div>
+        </div>
+        <div class="entry-right">
+          <div class="entry-feel">${s.feel||'😊'}</div>
+          <div class="entry-val" style="color:var(--nat)">−${s.kcal} kcal</div>
+          <div class="entry-sub">MET ${s.met}</div>
+        </div>
+        <button class="del-x" onclick="delSport('${s.id}')">✕</button>
+      </div>`;
+    }).join('');
+  }
+
+  // Alims du jour — groupés par repas
+  const al = document.getElementById('alim-list-today');
+  if(al) {
+    const repas = ['Petit-déjeuner','Déjeuner','Collation','Dîner'];
+    const icons = {'Petit-déjeuner':'☀️','Déjeuner':'🌿','Collation':'🍎','Dîner':'🌙'};
+    let html = '';
+    repas.forEach(r=>{
+      const items = dayAlims.filter(a=>a.repas===r);
+      const rKcal = items.reduce((s,a)=>s+(+a.kcal||0),0);
+      html += `<div class="repas-bloc">
+        <div class="repas-title">
+          <span>${icons[r]} ${r}</span>
+          <span class="repas-kcal-total">${rKcal > 0 ? rKcal+' kcal' : ''}</span>
+        </div>
+        ${items.map(a=>`<div class="alim-item">
+          <span class="alim-name">${a.name}${a.note?' <span style="font-size:10px;color:var(--low)">· '+a.note+'</span>':''}</span>
+          <span class="alim-kcal">+${a.kcal} kcal</span>
+          <button class="del-x" onclick="delAlim('${a.id}')">✕</button>
+        </div>`).join('')}
+        ${!items.length?`<div style="font-size:11px;color:var(--low);text-align:center;padding:5px">Rien — <button onclick="showTab('alim');document.getElementById('a-repas').value='${r}'" style="color:var(--alim);background:none;border:none;cursor:pointer;font-size:11px">Ajouter +</button></div>`:''}
+      </div>`;
+    });
+    al.innerHTML = html || '<p style="color:var(--low);font-size:12px;text-align:center;padding:14px">Aucun repas noté.</p>';
+  }
+}
+
+function delSport(id) { sports=sports.filter(s=>s.id!==id); persist(); renderToday(); toast('🗑 Supprimé'); }
+function delAlim(id)  { alims=alims.filter(a=>a.id!==id);   persistAlim(); renderToday(); toast('🗑 Supprimé'); }
+
+// ══════════════════════════════════════════════
+// SEMAINE
+// ══════════════════════════════════════════════
+function renderSemaine() {
+  const now = new Date();
+  const dow = (now.getDay()+6)%7;
+  const monday = new Date(now); monday.setDate(now.getDate()-dow);
+  const days = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+  let wSport=0,wIngere=0,wSessions=0;
+  document.getElementById('week-strip').innerHTML = Array.from({length:7},(_,i)=>{
+    const d=new Date(monday); d.setDate(monday.getDate()+i);
+    const ds=d.toISOString().slice(0,10);
+    const isToday=ds===today();
+    const dayS=sports.filter(s=>s.date===ds);
+    const dayA=alims.filter(a=>a.date===ds);
+    const depense=dayS.reduce((s,a)=>s+(+a.kcal||0),0);
+    const ingere=dayA.reduce((s,a)=>s+(+a.kcal||0),0);
+    const net=ingere-depense;
+    wSport+=depense; wIngere+=ingere; wSessions+=dayS.length;
+    const icons=dayS.map(s=>(ACT_CONFIG[s.type]||ACT_CONFIG.march).icon).join('');
+    const netColor=net<0?'var(--march)':net>300?'var(--rose)':'var(--gold)';
+    return `<div class="wday${isToday?' today':''}" onclick="currentDate='${ds}';showTab('aujourdhui')">
+      <div class="wday-label">${days[i]}</div>
+      <div class="wday-date">${d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})}</div>
+      <div class="wday-acts">${icons||'·'}</div>
+      ${depense?`<div class="wday-kcal-sport">−${depense}</div>`:''}
+      ${ingere?`<div class="wday-kcal-food">+${ingere}</div>`:''}
+      ${(depense||ingere)?`<div class="wday-bilan" style="color:${netColor}">${net>0?'+':''}${net}</div>`:''}
+    </div>`;
+  }).join('');
+  document.getElementById('week-totals').innerHTML=`
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+      <div class="card" style="flex:1;text-align:center"><div style="font-family:var(--mono);font-size:20px;font-weight:500;color:var(--nat)">${wSport}</div><div style="font-size:10px;color:var(--low);text-transform:uppercase;letter-spacing:.5px;margin-top:3px">Kcal brûlées</div></div>
+      <div class="card" style="flex:1;text-align:center"><div style="font-family:var(--mono);font-size:20px;font-weight:500;color:var(--alim)">${wIngere}</div><div style="font-size:10px;color:var(--low);text-transform:uppercase;letter-spacing:.5px;margin-top:3px">Kcal ingérées</div></div>
+      <div class="card" style="flex:1;text-align:center"><div style="font-family:var(--mono);font-size:20px;font-weight:500;color:var(--march)">${wSessions}</div><div style="font-size:10px;color:var(--low);text-transform:uppercase;letter-spacing:.5px;margin-top:3px">Séances</div></div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
+// NATATION
+// ══════════════════════════════════════════════
+function renderNatation() {
+  const natS=sports.filter(s=>s.type==='nat').sort((a,b)=>b.date.localeCompare(a.date));
+  const tbody=document.getElementById('nat-body');
+  if(!natS.length){tbody.innerHTML='<tr><td colspan="6" style="color:var(--low);text-align:center;padding:16px">Aucune séance natation.</td></tr>';return;}
+  tbody.innerHTML=natS.map(s=>`<tr>
+    <td style="text-align:left">${fmt(s.date)} <span style="font-size:10px;color:var(--chimio);font-weight:700">${jourJ(s.date)}</span></td>
+    <td class="perf-val">${s.crawl25||'—'}</td>
+    <td class="perf-val" style="color:var(--march)">${s.brasse25||'—'}</td>
+    <td>${s.duree} min${s.longueurs?' · '+s.longueurs+'L':''}</td>
+    <td class="perf-val" style="color:var(--renf)">${s.kcal}</td>
+    <td style="font-size:16px">${s.feel||'😊'}</td>
+  </tr>`).join('');
+}
+
+// ══════════════════════════════════════════════
+// FORMULAIRE SPORT
+// ══════════════════════════════════════════════
+function selAct(type,btn) {
+  selActType=type;
+  document.querySelectorAll('.act-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  // Sous-types
+  ['nat','tram','march','velo'].forEach(t=>{
+    const el=document.getElementById(t+'-subtype');
+    if(el) el.style.display=t===type?'':'none';
+  });
+  ['champs-nat','champs-velo'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display=(id==='champs-nat'&&type==='nat')||(id==='champs-velo'&&type==='velo')?'':'none';
+  });
+  selActMet=MET[type]||3.5;
+  updateKcalPreview();
+}
+function updateKcalPreview() {
+  const duree=parseInt(document.getElementById('s-duree')?.value)||0;
+  // Récupérer le MET du sous-type si disponible
+  let met=selActMet;
+  if(selActType==='nat')  { const s=document.getElementById('nat-sub');   if(s) met=parseFloat(s.value)||7.0; }
+  if(selActType==='tram') { const s=document.getElementById('tram-sub');  if(s) met=parseFloat(s.value)||4.5; }
+  if(selActType==='march'){ const s=document.getElementById('march-sub'); if(s) met=parseFloat(s.value)||3.5; }
+  if(selActType==='velo') { const s=document.getElementById('velo-sub');  if(s) met=parseFloat(s.value)||3.0; }
+  selActMet=met;
+  const kcal=calcKcal(met,duree);
+  const el=document.getElementById('kcal-preview');
+  if(el) el.textContent=duree>0?kcal+' kcal':'—';
+}
+function selFeel(btn) {
+  selFeelVal=btn.dataset.feel;
+  document.querySelectorAll('.feel-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+function saveSport() {
+  if(!selActType){toast('⚠ Choisir un type');return;}
+  const date=document.getElementById('s-date').value||today();
+  const duree=parseInt(document.getElementById('s-duree').value)||0;
+  if(!duree){toast('⚠ Saisir une durée');return;}
+  let met=selActMet;
+  if(selActType==='nat')  { const s=document.getElementById('nat-sub');   if(s) met=parseFloat(s.value)||7.0; }
+  if(selActType==='tram') { const s=document.getElementById('tram-sub');  if(s) met=parseFloat(s.value)||4.5; }
+  if(selActType==='march'){ const s=document.getElementById('march-sub'); if(s) met=parseFloat(s.value)||3.5; }
+  if(selActType==='velo') { const s=document.getElementById('velo-sub');  if(s) met=parseFloat(s.value)||3.0; }
+  const kcal=calcKcal(met,duree);
+  const s={id:uid(),date,type:selActType,met,duree,kcal,feel:selFeelVal,note:document.getElementById('s-note').value};
+  if(selActType==='nat') { s.crawl25=document.getElementById('s-crawl25')?.value||''; s.brasse25=document.getElementById('s-brasse25')?.value||''; s.longueurs=document.getElementById('s-longueurs')?.value||''; }
+  if(selActType==='velo') s.veloDest=document.getElementById('s-velo-dest')?.value||'';
+  sports.unshift(s); persist();
+  // Reset
+  document.getElementById('s-duree').value='';
+  document.getElementById('s-note').value='';
+  ['s-crawl25','s-brasse25','s-longueurs','s-velo-dest'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.querySelectorAll('.act-btn').forEach(b=>b.classList.remove('sel'));
+  document.querySelectorAll('.feel-btn').forEach(b=>b.classList.remove('sel'));
+  ['nat-subtype','tram-subtype','march-subtype','velo-subtype','champs-nat','champs-velo'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none';});
+  selActType=null; selActMet=3.5;
+  document.getElementById('kcal-preview').textContent='—';
+  currentDate=date;
+  showTab('aujourdhui');
+  toast('✅ '+kcal+' kcal enregistrées !');
+}
+
+// ══════════════════════════════════════════════
+// FORMULAIRE ALIM
+// ══════════════════════════════════════════════
+function updateAlimPreview() {
+  const kcal=parseInt(document.getElementById('a-kcal')?.value)||0;
+  const el=document.getElementById('alim-preview');
+  if(el) el.textContent=kcal+' kcal';
+}
+function saveAlim() {
+  const name=document.getElementById('a-name').value.trim();
+  const kcal=parseInt(document.getElementById('a-kcal').value)||0;
+  if(!name){toast('⚠ Saisir un aliment');return;}
+  if(!kcal){toast('⚠ Saisir les calories');return;}
+  const date=document.getElementById('a-date').value||today();
+  alims.unshift({id:uid(),date,repas:document.getElementById('a-repas').value,name,kcal,note:document.getElementById('a-note').value});
+  persistAlim();
+  document.getElementById('a-name').value='';
+  document.getElementById('a-kcal').value='';
+  document.getElementById('a-note').value='';
+  document.getElementById('alim-preview').textContent='0 kcal';
+  currentDate=date;
+  showTab('aujourdhui');
+  toast('✅ +'+kcal+' kcal ajoutées !');
+}
+
+// Quick foods
+function renderQuickFoods() {
+  const container=document.getElementById('quick-foods');
+  if(!container)return;
+  container.innerHTML=QUICK_FOODS.map(f=>`
+    <button onclick="quickFill('${f.name.replace(/'/g,"\\'")}',${f.kcal},'${f.note}')"
+      style="padding:6px 10px;border-radius:14px;border:1px solid var(--border);background:var(--white);font-size:11px;cursor:pointer;color:var(--mid);transition:all .12s;font-family:var(--sans)"
+      onmouseover="this.style.background='var(--alim-l)';this.style.borderColor='var(--alim)'"
+      onmouseout="this.style.background='var(--white)';this.style.borderColor='var(--border)'">
+      ${f.name} <span style="font-family:var(--mono);color:var(--alim);font-weight:700">${f.kcal} kcal</span>
+    </button>`).join('');
+}
+function quickFill(name,kcal,note) {
+  document.getElementById('a-name').value=name;
+  document.getElementById('a-kcal').value=kcal;
+  document.getElementById('a-note').value=note;
+  document.getElementById('alim-preview').textContent=kcal+' kcal';
+  document.getElementById('a-date').value=today();
+  // Scroll vers le formulaire
+  document.getElementById('a-name').scrollIntoView({behavior:'smooth'});
+  document.getElementById('a-name').focus();
+}
+
+// Listener durée pour preview en temps réel
+document.getElementById('s-duree')?.addEventListener('input', updateKcalPreview);
+['nat-sub','tram-sub','march-sub','velo-sub'].forEach(id=>{
+  document.getElementById(id)?.addEventListener('change', updateKcalPreview);
+});
+
+// INIT
+document.getElementById('s-date').value = today();
+document.getElementById('a-date').value = today();
+renderToday();
+renderQuickFoods();
+</script>
+</body>
+</html>
